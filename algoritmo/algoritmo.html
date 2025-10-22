@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>O que é um Algoritmo? — Interativo</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa7bd; --accent:#7dd3fc; --good:#86efac; --danger:#fb7185;
+      --glass: rgba(255,255,255,0.03);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#071020 0%, #071a2a 100%);color:#e6eef6;min-height:100vh}
+    header{padding:28px 36px;display:flex;gap:20px;align-items:center}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022;letter-spacing:1px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+
+    main{padding:20px 36px;display:grid;grid-template-columns:360px 1fr;gap:20px}
+
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(2,6,23,0.6);}
+    nav .card{position:sticky;top:24px}
+
+    .section-title{font-size:13px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+
+    .explain{line-height:1.5;color:#dceeff}
+    .highlight{color:var(--accent);font-weight:600}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button, select, input[type=range]{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:inherit}
+    button.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);color:#022;border:none}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* Visualizer area */
+    .visualizer{display:flex;flex-direction:column;gap:12px}
+    .canvas{height:260px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:10px;padding:14px;display:flex;align-items:end;gap:6px}
+    .bar{flex:1;border-radius:6px;background:linear-gradient(180deg,#60a5fa,#0369a1);display:flex;align-items:flex-end;justify-content:center;color:#022;font-weight:700}
+    .bar.small{background:linear-gradient(180deg,#a78bfa,#6d28d9)}
+    .bar.compare{outline:3px solid rgba(255,255,255,0.08)}
+    .bar.swap{outline:3px dashed rgba(255,255,255,0.14)}
+
+    .codebox{background:#071428;padding:12px;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:#cfe9ff;overflow:auto}
+    .pseudoline{padding:6px;border-radius:6px}
+    .active{background:linear-gradient(90deg,rgba(125,211,252,0.08),transparent);border-left:3px solid var(--accent)}
+
+    .row{display:flex;gap:12px}
+    footer{padding:24px 36px;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr;padding:12px}header{flex-direction:column;align-items:flex-start;padding:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>O que é um <span class="highlight">Algoritmo</span> — interativo</h1>
+      <p class="lead">Explicações curtas + demonstrações que podes controlar e percorrer passo a passo.</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <div class="card">
+        <div class="section-title">Resumo</div>
+        <div class="explain">
+          <p>Um <strong class="highlight">algoritmo</strong> é uma sequência finita de passos bem definidos para resolver um problema ou realizar uma tarefa. Pensa num algoritmo como uma receita de cozinha — ingredientes, passos e ordem.</p>
+          <p class="muted">Exemplos de problemas: ordenar números, procurar um valor, encontrar o caminho mais curto.</p>
+        </div>
+
+        <div class="section-title" style="margin-top:14px">Rápido</div>
+        <ul class="muted" style="padding-left:18px;margin:0">
+          <li><strong>Entrada</strong>: dados que o algoritmo usa.</li>
+          <li><strong>Saída</strong>: resultado produzido.</li>
+          <li><strong>Complexidade</strong>: eficiência (tempo e espaço).</li>
+        </ul>
+
+        <div class="section-title" style="margin-top:14px">Experimenta</div>
+        <div class="controls">
+          <button id="btn-sorting" class="primary">Abrir Ordenação</button>
+          <button id="btn-searching">Abrir Pesquisa</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="section-title">Dica</div>
+        <p class="muted">Usa os botões abaixo da visualização para <strong>executar</strong>, <strong>pausar</strong> ou <strong>passo a passo</strong>. Observa como o pseudocódigo marca a linha atual — isso ajuda a traduzir ideias para código real.</p>
+      </div>
+    </nav>
+
+    <section>
+      <div class="card">
+        <div class="section-title">Visualizador Interativo</div>
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+          <div class="muted">Escolhe um exemplo e experimenta.</div>
+          <div class="controls">
+            <select id="example-select">
+              <option value="sorting">Ordenação (ex.: Bubble / Selection)</option>
+              <option value="binary-search">Pesquisa Binária</option>
+            </select>
+            <button id="reset">Repor</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="visualizer">
+          <div class="canvas" id="canvas" aria-live="polite"></div>
+
+          <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+            <div class="controls">
+              <button id="run" class="primary">Executar</button>
+              <button id="step">Passo</button>
+              <button id="pause">Pausar</button>
+            </div>
+            <div class="muted">Velocidade: <input id="speed" type="range" min="50" max="1200" value="300"></div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <div style="flex:1">
+              <div class="section-title">Pseudocódigo</div>
+              <div id="pseudocode" class="codebox"></div>
+            </div>
+            <div style="width:320px">
+              <div class="section-title">Controles & Estado</div>
+              <div class="card" style="padding:12px;">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                  <label class="muted">Tamanho</label>
+                  <input id="size" type="range" min="5" max="30" value="12">
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+                  <label class="muted">Algoritmo</label>
+                  <select id="algo-select">
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                  </select>
+                </div>
+                <div class="muted">Estado: <span id="state">Pronto</span></div>
+                <div class="muted">Operações: <span id="ops">0</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="section-title">O que observar</div>
+        <ul class="muted" style="margin:0;padding-left:18px">
+          <li>Como as comparações mudam as posições.</li>
+          <li>Que linhas do pseudocódigo se repetem mais vezes (indica custo temporal).</li>
+          <li>Qual o número de operações até a ordenação completa.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="section-title">Explicação curta (em código)</div>
+        <div class="codebox">
+          // Exemplo: Bubble sort (versão simples)\nfor i from 0 to n-1:\n  for j from 0 to n-2-i:\n    if arr[j] > arr[j+1]:\n      swap(arr[j], arr[j+1])
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Feito como demo educativa — podes copiar/alterar o código.</div>
+      <div class="muted">Idioma: Português (pt-PT)</div>
+    </div>
+  </footer>
+
+<script>
+// --- Utilitários ---
+const randArray = (n)=>{const a=[];for(let i=0;i<n;i++)a.push(Math.floor(Math.random()*90)+10);return a}
+
+// --- DOM ---
+const canvas=document.getElementById('canvas');
+const runBtn=document.getElementById('run');
+const stepBtn=document.getElementById('step');
+const pauseBtn=document.getElementById('pause');
+const resetBtn=document.getElementById('reset');
+const sizeInput=document.getElementById('size');
+const algoSelect=document.getElementById('algo-select');
+const exampleSelect=document.getElementById('example-select');
+const pseudocode=document.getElementById('pseudocode');
+const stateEl=document.getElementById('state');
+const opsEl=document.getElementById('ops');
+const speedInput=document.getElementById('speed');
+
+let arr=[];
+let gen=null; // generator for steps
+let running=false;
+let currentExample='sorting';
+let ops=0;
+let speed=300;
+
+function renderArray(a, highlights={}){
+  canvas.innerHTML='';
+  a.forEach((v,i)=>{
+    const bar=document.createElement('div');
+    bar.className='bar';
+    if(v<30) bar.classList.add('small');
+    if(highlights.compare && highlights.compare.includes(i)) bar.classList.add('compare');
+    if(highlights.swap && highlights.swap.includes(i)) bar.classList.add('swap');
+    bar.style.height = (v*2.2)+'px';
+    bar.textContent = v;
+    canvas.appendChild(bar);
+  })
+}
+
+function setState(s){stateEl.textContent=s}
+function setOps(n){ops=n;opsEl.textContent=n}
+
+// --- Pseudocode helpers ---
+function showPseudocode(lines, activeIdx=-1){
+  pseudocode.innerHTML='';
+  lines.forEach((ln,i)=>{
+    const div=document.createElement('div');
+    div.className='pseudoline'+(i===activeIdx? ' active':'');
+    div.innerHTML=`<code style="white-space:pre">${ln}</code>`;
+    pseudocode.appendChild(div);
+  })
+}
+
+// --- Algorithms as generators (yield step descriptors) ---
+function* bubbleSort(a){
+  const n=a.length;
+  yield {type:'pseudocode',line:0};
+  for(let i=0;i<n-1;i++){
+    yield {type:'pseudocode',line:1};
+    for(let j=0;j<n-1-i;j++){
+      yield {type:'compare',i:j,j:j+1};
+      if(a[j] > a[j+1]){
+        yield {type:'swap',i:j,j:j+1};
+        const tmp=a[j]; a[j]=a[j+1]; a[j+1]=tmp;
+        yield {type:'after-swap',array: a.slice()};
+      }
+      yield {type:'after-compare',array: a.slice()};
+    }
+  }
+  yield {type:'done'};
+}
+
+function* selectionSort(a){
+  const n=a.length;
+  yield {type:'pseudocode',line:0};
+  for(let i=0;i<n-1;i++){
+    let min=i; yield {type:'pseudocode',line:1,i};
+    for(let j=i+1;j<n;j++){
+      yield {type:'compare',i:j,j:min};
+      if(a[j] < a[min]){ min=j; yield {type:'new-min',idx:min}; }
+    }
+    if(min!==i){ yield {type:'swap',i:i,j:min}; const tmp=a[i]; a[i]=a[min]; a[min]=tmp; yield {type:'after-swap',array:a.slice()}};
+  }
+  yield {type:'done'};
+}
+
+function* insertionSort(a){
+  const n=a.length; yield {type:'pseudocode',line:0};
+  for(let i=1;i<n;i++){
+    let key=a[i]; let j=i-1; yield {type:'pseudocode',line:1,i};
+    while(j>=0 && a[j]>key){ yield {type:'compare',i:j,j:i}; a[j+1]=a[j]; j--; yield {type:'shift',idx:j+1,array:a.slice()}; }
+    a[j+1]=key; yield {type:'insert',idx:j+1,array:a.slice()};
+  }
+  yield {type:'done'};
+}
+
+// --- Pseudocode lines for each algorithm ---
+const pseudo = {
+  'bubble':[
+    'function bubbleSort(arr):',
+    'for i from 0 to n-1:',
+    '  for j from 0 to n-2-i:',
+    '    if arr[j] > arr[j+1]:',
+    '      swap(arr[j], arr[j+1])'
+  ],
+  'selection':[
+    'function selectionSort(arr):',
+    'for i from 0 to n-1:',
+    '  min = i',
+    '  for j from i+1 to n-1:',
+    '    if arr[j] < arr[min]: min = j',
+    '  swap(arr[i], arr[min])'
+  ],
+  'insertion':[
+    'function insertionSort(arr):',
+    'for i from 1 to n-1:',
+    '  key = arr[i]',
+    '  j = i-1',
+    '  while j>=0 and arr[j] > key:',
+    '    arr[j+1] = arr[j]; j = j-1',
+    '  arr[j+1] = key'
+  ]
+}
+
+// --- Controller ---
+function prepareSorting(){
+  arr = randArray(parseInt(sizeInput.value));
+  setOps(0); setState('Pronto');
+  renderArray(arr);
+  showPseudocode(pseudo[algoSelect.value], -1);
+  chooseGenerator();
+}
+
+function chooseGenerator(){
+  const copy = arr.slice();
+  const selected = algoSelect.value;
+  if(selected==='bubble') gen = bubbleSort(copy);
+  else if(selected==='selection') gen = selectionSort(copy);
+  else if(selected==='insertion') gen = insertionSort(copy);
+}
+
+async function stepOnce(){
+  if(!gen) return;
+  const res = gen.next();
+  if(res.done){ setState('Concluído'); renderArray(arr); return; }
+  const ev = res.value; ops++; setOps(ops);
+  // handle event types
+  if(ev.type==='pseudocode'){
+    showPseudocode(pseudo[algoSelect.value], ev.line || -1);
+  } else if(ev.type==='compare'){
+    renderArray(arr,{compare:[ev.i,ev.j]});
+    showPseudocode(pseudo[algoSelect.value], 2);
+  } else if(ev.type==='swap'){
+    renderArray(arr,{swap:[ev.i,ev.j]}); showPseudocode(pseudo[algoSelect.value],3);
+  } else if(ev.type==='after-swap' || ev.type==='after-compare' || ev.type==='shift' || ev.type==='insert'){
+    renderArray(ev.array || arr);
+  } else if(ev.type==='new-min'){
+    renderArray(arr,{compare:[ev.idx]});
+  } else if(ev.type==='done'){
+    setState('Concluído'); renderArray(arr);
+  }
+}
+
+let runner=null;
+function runLoop(){
+  if(running) return;
+  running=true; setState('A executar');
+  runner = setInterval(()=>{
+    const r = gen.next();
+    if(r.done){ clearInterval(runner); running=false; setState('Concluído'); renderArray(arr); return; }
+    ops++; setOps(ops);
+    const ev=r.value;
+    if(ev.type==='compare') renderArray(arr,{compare:[ev.i,ev.j]});
+    else if(ev.type==='swap') renderArray(arr,{swap:[ev.i,ev.j]});
+    else if(ev.type==='after-swap' || ev.type==='after-compare' || ev.type==='shift' || ev.type==='insert') renderArray(ev.array || arr);
+    else if(ev.type==='pseudocode') showPseudocode(pseudo[algoSelect.value], ev.line || -1);
+  }, speed);
+}
+
+function pause(){ if(runner) clearInterval(runner); running=false; setState('Pausado'); }
+
+// --- Wiring ---
+runBtn.addEventListener('click', ()=>{ if(!gen) chooseGenerator(); runLoop(); });
+stepBtn.addEventListener('click', ()=>{ if(!gen) chooseGenerator(); stepOnce(); });
+pauseBtn.addEventListener('click', pause);
+resetBtn.addEventListener('click', ()=>{ pause(); prepareSorting(); });
+sizeInput.addEventListener('input', ()=>{ prepareSorting(); });
+algoSelect.addEventListener('change', ()=>{ prepareSorting(); });
+exampleSelect.addEventListener('change',(e)=>{
+  currentExample=e.target.value;
+  if(currentExample==='sorting'){ document.getElementById('algo-select').disabled=false; prepareSorting(); }
+  else if(currentExample==='binary-search'){ // switch view to binary search demo
+    // for brevity: we'll prepare a small binary search interactive
+    pause(); document.getElementById('algo-select').disabled=true; prepareBinarySearch(); }
+});
+speedInput.addEventListener('input', ()=>{ speed = parseInt(speedInput.value); if(running){ pause(); runLoop(); }});
+
+document.getElementById('btn-sorting').addEventListener('click', ()=>{ exampleSelect.value='sorting'; exampleSelect.dispatchEvent(new Event('change')); window.scrollTo({top:300,behavior:'smooth'}); });
+document.getElementById('btn-searching').addEventListener('click', ()=>{ exampleSelect.value='binary-search'; exampleSelect.dispatchEvent(new Event('change')); window.scrollTo({top:300,behavior:'smooth'}); });
+
+// --- Binary Search Demo ---
+let bsArr=[]; let bsTarget=null; let bsStep=0;
+function prepareBinarySearch(){
+  bsArr = [3,7,12,18,25,29,34,40,45];
+  bsTarget = bsArr[Math.floor(Math.random()*bsArr.length)];
+  bsStep=0; setState('Pronto (Binary Search)'); setOps(0); renderArray(bsArr);
+  showPseudocode(['function binarySearch(arr, target):','low = 0','high = n-1','while low <= high:','  mid = (low+high)//2','  if arr[mid]==target: return mid','  else if arr[mid] < target: low = mid+1','  else: high = mid-1'], -1);
+  // show target as small badge (append)
+  const note=document.createElement('div'); note.className='muted'; note.style.marginTop='6px'; note.textContent='Target: '+bsTarget; canvas.parentElement.insertBefore(note, canvas.nextSibling);
+}
+
+function stepBinary(){
+  if(bsStep===-1) return;
+  // simulate stepwise
+  let low=0, high=bsArr.length-1; let step=0;
+  const steps=[];
+  while(low<=high){
+    const mid=Math.floor((low+high)/2);
+    steps.push({low,mid,high,compare:bsArr[mid]});
+    if(bsArr[mid]===bsTarget){ break; }
+    else if(bsArr[mid] < bsTarget) low=mid+1; else high=mid-1;
+  }
+  if(bsStep>=steps.length){ setState('Concluído'); bsStep=-1; return; }
+  const s=steps[bsStep];
+  renderArray(bsArr,{compare:[s.mid]});
+  showPseudocode(['function binarySearch(arr, target):','low = 0','high = n-1','while low <= high:','  mid = (low+high)//2','  if arr[mid]==target: return mid','  else if arr[mid] < target: low = mid+1','  else: high = mid-1'], 3);
+  bsStep++;
+  setOps(bsStep);setState('A executar (binary)');
+}
+
+// initial
+prepareSorting();
+</script>
+</body>
+</html>
